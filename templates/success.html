@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Confirmed</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; background: #f0f2f5; text-align: center; }
+        .header { background: #4a90e2; color: white; padding: 20px; }
+        .header h1 { margin: 0; }
+        .container { max-width: 500px; margin: 30px auto; background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .success-icon { font-size: 4em; margin-bottom: 10px; }
+        .message { font-size: 1.3em; margin: 15px 0; color: #333; }
+        .details { background: #f9f9f9; padding: 15px; border-radius: 8px; text-align: left; margin: 20px 0; }
+        .details p { margin: 8px 0; }
+        .free-badge { background: #ffd700; color: #333; font-weight: bold; padding: 5px 10px; border-radius: 20px; display: inline-block; margin-top: 10px; }
+        .delivery { background: #e8f5e8; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 1.1em; }
+        .payment-info { background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 20px 0; }
+        .back { display: inline-block; background: #4a90e2; color: white; text-decoration: none; padding: 12px 30px; border-radius: 8px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>✅ Order Placed!</h1>
+    </div>
+    <div class="container">
+        <div class="success-icon">🎉</div>
+        <div class="message">Thank you for ordering with DormDash!</div>
+        
+        <div class="details">
+            <p><strong>Order ID:</strong> {{ order.id }}</p>
+            <p><strong>Room:</strong> {{ order.room }}</p>
+            <p><strong>Shop:</strong> {{ order.shop_name }}</p>
+            <p><strong>Phone:</strong> {{ order.phone_number }}</p>
+            <p><strong>Item:</strong> {{ order.item }}</p>
+            <p><strong>Payment Method:</strong> 
+                {% if order.payment_method == 'cash' %}💵 Cash
+                {% else %}📱 M-Pesa{% endif %}
+            </p>
+            <p><strong>Total (goods + delivery):</strong> {{ order.total_amount }} KES</p>
+            {% if order.free %}
+                <p><strong>Final Amount:</strong> <span style="text-decoration: line-through;">{{ order.total_amount }} KES</span> 
+                <strong style="color:green;">FREE 🎁</strong></p>
+            {% else %}
+                <p><strong>Amount to Pay:</strong> {{ order.final_price }} KES</p>
+            {% endif %}
+        </div>
+
+        <div class="delivery">
+            🚚 <strong>Delivery message:</strong><br>
+            Your order will be delivered to <strong>Room {{ order.room }}</strong> within 20 minutes!
+        </div>
+
+        {% if order.payment_method == 'mpesa' %}
+        <div class="payment-info">
+            <p><strong>📱 M-Pesa Payment:</strong></p>
+            <p>An STK push has been sent to your phone.</p>
+            <p>Enter your PIN to complete payment.</p>
+            <p><small>Business number: <strong>0719516573</strong></small></p>
+            <p><em>Your order is pending until payment is confirmed.</em></p>
+        </div>
+        {% endif %}
+
+        {% if order.free %}
+            <div class="free-badge">🎁 This order is FREE – you've earned it! 🎁</div>
+        {% endif %}
+
+        <a href="/" class="back">← Order Again</a>
+    </div>
+</body>
+</html>

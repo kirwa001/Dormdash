@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Orders</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #2c3e50; color: white; }
+        .header { background: #1e2b38; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; font-size: 1.5em; }
+        .header a { color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 5px; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+        .filters { margin: 20px 0; display: flex; gap: 10px; flex-wrap: wrap; }
+        .filter-btn { padding: 10px 20px; border: none; border-radius: 5px; background: white; color: #2c3e50; cursor: pointer; text-decoration: none; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .filter-btn.active { background: #1e2b38; color: white; }
+        .order-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .order-card { background: white; color: black; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .order-card p { margin: 5px 0; }
+        .order-card .status { display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 0.9em; font-weight: 600; }
+        .status.pending { background: #ffc107; color: #333; }
+        .status.paid { background: #28a745; color: white; }
+        .status.delivered { background: #17a2b8; color: white; }
+        .view-link { display: inline-block; margin-top: 10px; color: #2c3e50; font-weight: 600; text-decoration: none; }
+        .view-link:hover { text-decoration: underline; }
+        .no-orders { background: white; color: black; padding: 20px; border-radius: 8px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Orders</h1>
+        <a href="{{ url_for('admin_dashboard') }}">← Dashboard</a>
+    </div>
+    <div class="container">
+        <div class="filters">
+            <a href="{{ url_for('admin_orders', status='all') }}" class="filter-btn {% if current_filter == 'all' %}active{% endif %}">All</a>
+            <a href="{{ url_for('admin_orders', status='pending') }}" class="filter-btn {% if current_filter == 'pending' %}active{% endif %}">Pending</a>
+            <a href="{{ url_for('admin_orders', status='paid') }}" class="filter-btn {% if current_filter == 'paid' %}active{% endif %}">Paid</a>
+            <a href="{{ url_for('admin_orders', status='delivered') }}" class="filter-btn {% if current_filter == 'delivered' %}active{% endif %}">Delivered</a>
+        </div>
+
+        <div class="order-grid">
+            {% for order in orders %}
+            <div class="order-card">
+                <p><strong>ID:</strong> {{ order.id }}</p>
+                <p><strong>Time:</strong> {{ order.timestamp[:16] }}</p>
+                <p><strong>Room:</strong> {{ order.room }}</p>
+                <p><strong>Shop:</strong> {{ order.shop_name }}</p>
+                <p><strong>Phone:</strong> {{ order.phone_number }}</p>
+                <p><strong>Item:</strong> {{ order.item[:30] }}{% if order.item|length > 30 %}...{% endif %}</p>
+                <p><strong>Total:</strong> KES {{ order.final_price }} {% if order.free %}🎁{% endif %}</p>
+                <p>
+                    <span class="status {{ order.status }}">{{ order.status }}</span>
+                </p>
+                <a class="view-link" href="{{ url_for('admin_order', order_id=order.id) }}">View Details →</a>
+            </div>
+            {% else %}
+            <div class="no-orders">No orders found</div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

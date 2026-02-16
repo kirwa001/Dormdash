@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Available Items</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #007bff; color: white; }
+        tr:hover { background-color: #f1f1f1; }
+        .back { margin-top: 20px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <h1>Available Items</h1>
+    <table>
+        <tr><th>Name</th><th>Price</th><th>Unit</th></tr>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.name }}</td>
+            <td>${{ item.price }}</td>
+            <td>per {{ item.unit }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a class="back" href="/">← Back to home</a>
+</body>
+</html>

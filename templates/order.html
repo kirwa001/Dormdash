@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Place Your Order</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; background: #f0f2f5; }
+        .header { background: #4a90e2; color: white; padding: 15px; text-align: center; }
+        .header h1 { margin: 0; font-size: 1.8em; }
+        .container { max-width: 500px; margin: 20px auto; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        label { font-weight: 600; display: block; margin: 15px 0 5px; color: #333; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1em; box-sizing: border-box; }
+        input:focus, select:focus, textarea:focus { border-color: #4a90e2; outline: none; }
+        .radio-group { display: flex; gap: 20px; margin: 10px 0; flex-wrap: wrap; }
+        .radio-group label { font-weight: normal; display: flex; align-items: center; gap: 5px; }
+        .total-bar { background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: center; font-size: 1.3em; font-weight: bold; border: 2px solid #4a90e2; }
+        .total-bar span { color: #4a90e2; font-size: 1.5em; }
+        button { background: #4a90e2; color: white; border: none; padding: 15px; font-size: 1.2em; border-radius: 8px; width: 100%; margin-top: 20px; cursor: pointer; }
+        button:hover { background: #357ab8; }
+        .pricing-note { background: #fff3cd; padding: 10px; border-radius: 8px; margin: 20px 0; font-size: 0.9em; border-left: 4px solid #ffc107; }
+        .pricing-note p { margin: 5px 0; }
+        .back { display: block; text-align: center; margin-top: 20px; color: #4a90e2; text-decoration: none; }
+        .mpesa-note { background: #d4edda; padding: 10px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #28a745; }
+        .required-star { color: red; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📝 Order Details</h1>
+    </div>
+    <div class="container">
+        <form method="POST" id="orderForm">
+            <label>Hostel (optional)</label>
+            <input type="text" name="hostel" id="hostel" placeholder="e.g., Mandela">
+
+            <label>Room Number <span class="required-star">*</span></label>
+            <input type="text" name="room" id="room" required placeholder="e.g., 101B">
+
+            <label>Shop Name <span class="required-star">*</span></label>
+            <input type="text" name="shop_name" id="shop_name" required placeholder="e.g., Kibanda, Supermarket">
+
+            <label>Phone Number <span class="required-star">*</span></label>
+            <input type="tel" name="phone_number" id="phone_number" required placeholder="e.g., 0712345678">
+
+            <label>What do you want? <span class="required-star">*</span></label>
+            <textarea name="item_description" id="item_description" rows="2" required placeholder="e.g., 2 chapati, 1 soda, rice"></textarea>
+
+            <label>Amount for Goods (KES) <span class="required-star">*</span></label>
+            <input type="number" name="goods_amount" id="goods_amount" min="1" value="100" required step="1" oninput="calculateTotal()">
+
+            <label>Quantity of Items <span class="required-star">*</span></label>
+            <input type="number" name="quantity" id="quantity" min="1" value="1" required oninput="calculateTotal()">
+
+            <!-- Live Total Display -->
+            <div class="total-bar" id="totalDisplay">
+                💰 Total: <span id="totalAmount">0</span> KES
+            </div>
+
+            <label>Payment Method</label>
+            <div class="radio-group">
+                <label><input type="radio" name="payment_method" value="cash" checked onchange="toggleMpesaField()"> 💵 Cash</label>
+                <label><input type="radio" name="payment_method" value="mpesa" onchange="toggleMpesaField()"> 📱 M-Pesa</label>
+            </div>
+
+            <!-- M-Pesa Number Field (hidden by default) -->
+            <div id="mpesaField" style="display: none;">
+                <label>M-Pesa Phone Number <span class="required-star">*</span></label>
+                <input type="tel" name="mpesa_number" id="mpesa_number" placeholder="e.g., 0719516573" pattern="[0-9]{10,12}">
+                <div class="mpesa-note">
+                    <small>📱 You'll receive an STK push on this number to complete payment</small>
+                </div>
+            </div>
+
+            <div class="pricing-note">
+                <p><strong>📦 Delivery Charges:</strong></p>
+                <p>• 1 item → 10 KES delivery</p>
+                <p>• 2–5 items → 20 KES delivery</p>
+                <p>• 6+ items → 50 KES delivery</p>
+                <p>🎁 Order 10 times, get one FREE!</p>
+            </div>
+
+            <button type="submit">✅ Place Order</button>
+        </form>
+        <a class="back" href="/">← Back to Home</a>
+    </div>
+
+    <script>
+        function calculateTotal() {
+            const goodsAmount = parseFloat(document.getElementById('goods_amount').value) || 0;
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            
+            let deliveryFee = 0;
+            if (quantity === 1) {
+                deliveryFee = 10;
+            } else if (quantity >= 2 && quantity <= 5) {
+                deliveryFee = 20;
+            } else if (quantity >= 6) {
+                deliveryFee = 50;
+            }
+            
+            const total = goodsAmount + deliveryFee;
+            document.getElementById('totalAmount').textContent = total;
+        }
+
+        function toggleMpesaField() {
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+            const mpesaField = document.getElementById('mpesaField');
+            const mpesaInput = document.getElementById('mpesa_number');
+            
+            if (paymentMethod === 'mpesa') {
+                mpesaField.style.display = 'block';
+                mpesaInput.required = true;
+            } else {
+                mpesaField.style.display = 'none';
+                mpesaInput.required = false;
+            }
+        }
+
+        window.onload = function() {
+            calculateTotal();
+        };
+    </script>
+</body>
+</html>

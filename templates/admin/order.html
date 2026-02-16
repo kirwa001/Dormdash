@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order #{{ order.id }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #2c3e50; color: white; }
+        .header { background: #1e2b38; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; font-size: 1.5em; }
+        .header a { color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 5px; }
+        .container { max-width: 800px; margin: 20px auto; padding: 0 20px; }
+        .card { background: white; color: black; border-radius: 10px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .details { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+        .detail-item { border-bottom: 1px solid #eee; padding: 8px 0; }
+        .detail-label { font-weight: 600; color: #2c3e50; }
+        .detail-value { font-size: 1.1em; }
+        .status-form, .delete-form { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; }
+        select, button, .delete-btn { padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; }
+        button { background: #2c3e50; color: white; border: none; cursor: pointer; margin-left: 10px; }
+        button:hover { background: #1a252f; }
+        .delete-btn { background: #dc3545; color: white; border: none; cursor: pointer; }
+        .delete-btn:hover { background: #c82333; }
+        .flash { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Order #{{ order.id }}</h1>
+        <a href="{{ url_for('admin_orders') }}">← Back to Orders</a>
+    </div>
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash">{{ messages[0] }}</div>
+            {% endif %}
+        {% endwith %}
+        <div class="card">
+            <h2>Order Details</h2>
+            <div class="details">
+                <div class="detail-item"><span class="detail-label">Time:</span> <span class="detail-value">{{ order.timestamp }}</span></div>
+                <div class="detail-item"><span class="detail-label">Hostel:</span> <span class="detail-value">{{ order.hostel or 'N/A' }}</span></div>
+                <div class="detail-item"><span class="detail-label">Room:</span> <span class="detail-value">{{ order.room }}</span></div>
+                <div class="detail-item"><span class="detail-label">Shop:</span> <span class="detail-value">{{ order.shop_name }}</span></div>
+                <div class="detail-item"><span class="detail-label">Phone:</span> <span class="detail-value">{{ order.phone_number }}</span></div>
+                <div class="detail-item"><span class="detail-label">Item:</span> <span class="detail-value">{{ order.item }}</span></div>
+                <div class="detail-item"><span class="detail-label">Goods Amount:</span> <span class="detail-value">KES {{ order.goods_amount }}</span></div>
+                <div class="detail-item"><span class="detail-label">Quantity:</span> <span class="detail-value">{{ order.quantity }}</span></div>
+                <div class="detail-item"><span class="detail-label">Delivery Fee:</span> <span class="detail-value">KES {{ order.delivery_fee }}</span></div>
+                <div class="detail-item"><span class="detail-label">Total Amount:</span> <span class="detail-value">KES {{ order.total_amount }}</span></div>
+                <div class="detail-item"><span class="detail-label">Final Price:</span> <span class="detail-value">KES {{ order.final_price }} {% if order.free %} (FREE!){% endif %}</span></div>
+                <div class="detail-item"><span class="detail-label">Payment Method:</span> <span class="detail-value">{{ order.payment_method }}</span></div>
+                {% if order.mpesa_number %}
+                <div class="detail-item"><span class="detail-label">M-Pesa Number:</span> <span class="detail-value">{{ order.mpesa_number }}</span></div>
+                {% endif %}
+                <div class="detail-item"><span class="detail-label">Current Status:</span> <span class="detail-value" style="text-transform:uppercase; font-weight:bold;">{{ order.status }}</span></div>
+            </div>
+
+            <!-- Status update form -->
+            <div class="status-form">
+                <h3>Update Status</h3>
+                <form method="POST" style="display: inline;">
+                    <select name="status">
+                        <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="paid" {% if order.status == 'paid' %}selected{% endif %}>Paid</option>
+                        <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Delivered</option>
+                    </select>
+                    <button type="submit">Update</button>
+                </form>
+            </div>
+
+            <!-- Delete form -->
+            <div class="delete-form">
+                <form method="POST" onsubmit="return confirm('Are you sure you want to delete this order?');">
+                    <button type="submit" name="delete" value="yes" class="delete-btn">🗑️ Delete Order</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
